@@ -1,0 +1,136 @@
+#!/bin/sh
+
+# This script simply provides shortcuts to common commands for mobile development
+
+APP_NAME=expoapp
+
+if [ -d $APP_NAME ]; then cd $APP_NAME ;  fi
+
+app_create() {
+  # NPM template to use: default, blank, blank-typescript, tabs, bare-minimum
+  # specify template version with @ symbol .  e.g --template tabs@52
+  pnpm create expo-app --no-install --template tabs $APP_NAME
+
+  # Fix filename to pass linting
+  mv $APP_NAME/components/__tests__/StyledText-test.js $APP_NAME/components/__tests__/StyledText-test.jsx
+
+  # copy this script into the new project folder
+  cp run $APP_NAME/
+
+  # Move source code into src folder
+  mkdir $APP_NAME/src
+  mv $APP_NAME/app $APP_NAME/src/
+  mv $APP_NAME/assets $APP_NAME/src/
+  mv $APP_NAME/components $APP_NAME/src/
+  mv $APP_NAME/constants $APP_NAME/src/
+  cd $APP_NAME
+
+  # update tsconfig.json alias for @
+  awk '{gsub(/\.\/\*/, "./src/*"); print}' tsconfig.json > tsconfig.tmp && mv -f tsconfig.tmp tsconfig.json
+
+  # update app.json ./assets to ./src/assets
+  awk '{gsub("./assets", "./src/assets"); print}' app.json > app.tmp && mv -f app.tmp app.json
+
+  # Remove react-native-reanimated reduces node_modules folder from 2Gb to 1.1gb
+  # Keep react-native-screens as it is needed by IOS
+  pnpm remove expo-linking expo-system-ui react-native-reanimated
+
+  # remove reference to react-native-reanimated
+  SEARCH="import 'react-native-reanimated';"
+  REPLACE="// import 'react-native-reanimated';"
+  awk -v SEARCH="$SEARCH" -v REPLACE="$REPLACE" "{gsub(SEARCH, REPLACE); print}" src/app/_layout.tsx > src/app/_layout.tmp && \
+    mv -f src/app/_layout.tmp src/app/_layout.tsx
+
+  git add app/ assets/ components/ constants/ .gitignore *
+}
+
+
+app_format() {
+  if [ ! -f deno.jsonc ]; then
+    echo '{
+  // https://docs.deno.com/runtime/fundamentals/configuration/
+  "fmt": {
+    "singleQuote": true,
+    "lineWidth": 120
+  },
+  "lint": {
+    "exclude": [
+      "node_modules/"
+    ],
+    "rules": {
+      "exclude": [
+        "no-empty-enum"
+      ]
+    }
+  }
+}' > deno.jsonc
+  fi
+
+  if [ "$1" = "fix" ]; then
+    deno fmt src/
+  else
+    deno fmt --check src/
+  fi
+}
+
+
+app_lint() {
+  if [ "$1" = "fix" ]; then
+    deno lint --fix src/
+  else
+    deno lint src/
+  fi
+}
+
+
+app_start_android() {
+  ./node_modules/.bin/expo run:android
+}
+
+
+app_build_android() {
+  eas build --platform android --profile preview --local --non-interactive
+}
+
+
+app_start_ios() {
+  ./node_modules/.bin/expo run:ios
+}
+
+
+app_build_ios() {
+  eas build --platform ios --profile preview --local --non-interactive
+}
+
+
+app_start_web() {
+  ./node_modules/.bin/expo start --web
+}
+
+
+app_build_web() {
+  ./node_modules/.bin/expo export --platform web
+}
+
+
+if [ "$1" = "create" ]; then app_create ; exit $? ;fi
+
+if [ "$1" = "format" ]; then app_format $2 ; exit $? ;fi
+if [ "$1" = "lint" ]; then app_lint $2 ; exit $? ;fi
+
+# Android commands
+if [ "$1" = "start.a" ]; then app_start_android ; exit $? ;fi
+if [ "$1" = "build.a" ]; then app_build_android ; exit $? ;fi
+
+# ios commands
+if [ "$1" = "start.i" ]; then app_start_ios ; exit $? ;fi
+if [ "$1" = "build.i" ]; then app_build_ios ; exit $? ;fi
+
+# web commands
+if [ "$1" = "start.w" ]; then app_start_web ; exit $? ;fi
+if [ "$1" = "build.w" ]; then app_build_web ; exit $? ;fi
+
+
+if [ "$1" = "doctor" ]; then ./node_modules/.bin/expo doctor ; exit $? ;fi
+
+echo "Unknown command"
