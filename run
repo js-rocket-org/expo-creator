@@ -8,7 +8,7 @@ APP_NAME=expoapp
 if [ -d $APP_NAME ]; then cd $APP_NAME ;  fi
 
 check_if_deno_installed() {
-  which denoz
+  which -s deno
   if [ ! $? = 0 ]; then
     echo "deno is not installed. Download from here:  https://github.com/denoland/deno/releases"
     echo "quick links:"
@@ -80,9 +80,11 @@ app_create() {
   awk -v SEARCH="$SEARCH" -v REPLACE="$REPLACE" "{gsub(SEARCH, REPLACE); print}" src/app/_layout.tsx > src/app/_layout.tmp && \
     mv -f src/app/_layout.tmp src/app/_layout.tsx
 
+  # copy additions
+  cp -R ../_additions/* ./
   add_deno_rules
 
-  git add app/ assets/ components/ constants/ .gitignore *
+  git add -A app/ assets/ components/ constants/ .gitignore *
 }
 
 
