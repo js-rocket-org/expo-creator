@@ -4,7 +4,45 @@
 
 APP_NAME=expoapp
 
+# TODO remove this line in created project folder
 if [ -d $APP_NAME ]; then cd $APP_NAME ;  fi
+
+check_if_deno_installed() {
+  which denoz
+  if [ ! $? = 0 ]; then
+    echo "deno is not installed. Download from here:  https://github.com/denoland/deno/releases"
+    echo "quick links:"
+    echo "curl -L -O https://github.com/denoland/deno/releases/download/v2.2.11/deno-x86_64-unknown-linux-gnu.zip"
+    echo "curl -L -O https://github.com/denoland/deno/releases/download/v2.2.11/deno-x86_64-apple-darwin.zip"
+    exit 1
+  fi
+}
+
+check_if_deno_installed
+
+
+add_deno_rules() {
+  if [ ! -f deno.jsonc ]; then
+    echo '{
+  // https://docs.deno.com/runtime/fundamentals/configuration/
+  "fmt": {
+    "singleQuote": true,
+    "lineWidth": 120
+  },
+  "lint": {
+    "exclude": [
+      "node_modules/"
+    ],
+    "rules": {
+      "exclude": [
+        "no-empty-enum"
+      ]
+    }
+  }
+}' > deno.jsonc
+  fi
+}
+
 
 app_create() {
   # NPM template to use: default, blank, blank-typescript, tabs, bare-minimum
@@ -16,6 +54,7 @@ app_create() {
 
   # copy this script into the new project folder
   cp run $APP_NAME/
+  cp run.ios run.and run.web $APP_NAME/
 
   # Move source code into src folder
   mkdir $APP_NAME/src
@@ -41,31 +80,13 @@ app_create() {
   awk -v SEARCH="$SEARCH" -v REPLACE="$REPLACE" "{gsub(SEARCH, REPLACE); print}" src/app/_layout.tsx > src/app/_layout.tmp && \
     mv -f src/app/_layout.tmp src/app/_layout.tsx
 
+  add_deno_rules
+
   git add app/ assets/ components/ constants/ .gitignore *
 }
 
 
 app_format() {
-  if [ ! -f deno.jsonc ]; then
-    echo '{
-  // https://docs.deno.com/runtime/fundamentals/configuration/
-  "fmt": {
-    "singleQuote": true,
-    "lineWidth": 120
-  },
-  "lint": {
-    "exclude": [
-      "node_modules/"
-    ],
-    "rules": {
-      "exclude": [
-        "no-empty-enum"
-      ]
-    }
-  }
-}' > deno.jsonc
-  fi
-
   if [ "$1" = "fix" ]; then
     deno fmt src/
   else
@@ -82,34 +103,8 @@ app_lint() {
   fi
 }
 
-
-app_start_android() {
-  ./node_modules/.bin/expo run:android
-}
-
-
-app_build_android() {
-  eas build --platform android --profile preview --local --non-interactive
-}
-
-
-app_start_ios() {
-  ./node_modules/.bin/expo run:ios
-}
-
-
-app_build_ios() {
-  eas build --platform ios --profile preview --local --non-interactive
-}
-
-
-app_start_web() {
-  ./node_modules/.bin/expo start --web
-}
-
-
-app_build_web() {
-  ./node_modules/.bin/expo export --platform web
+app_typecheck() {
+  ./node_modules/.bin/tsc --noEmit --allowJs
 }
 
 
@@ -117,18 +112,19 @@ if [ "$1" = "create" ]; then app_create ; exit $? ;fi
 
 if [ "$1" = "format" ]; then app_format $2 ; exit $? ;fi
 if [ "$1" = "lint" ]; then app_lint $2 ; exit $? ;fi
+if [ "$1" = "typecheck" ]; then app_lint $2 ; exit $? ;fi
 
 # Android commands
-if [ "$1" = "start.a" ]; then app_start_android ; exit $? ;fi
-if [ "$1" = "build.a" ]; then app_build_android ; exit $? ;fi
+if [ "$1" = "start.a" ]; then . ./run.and start ; exit $? ;fi
+if [ "$1" = "build.a" ]; then . ./run.and build $2 ; exit $? ;fi
 
 # ios commands
-if [ "$1" = "start.i" ]; then app_start_ios ; exit $? ;fi
-if [ "$1" = "build.i" ]; then app_build_ios ; exit $? ;fi
+if [ "$1" = "start.i" ]; then . ./run.ios start ; exit $? ;fi
+if [ "$1" = "build.i" ]; then . ./run.ios build $2 ; exit $? ;fi
 
 # web commands
-if [ "$1" = "start.w" ]; then app_start_web ; exit $? ;fi
-if [ "$1" = "build.w" ]; then app_build_web ; exit $? ;fi
+if [ "$1" = "start.w" ]; then . ./run.web start ; exit $? ;fi
+if [ "$1" = "build.w" ]; then . ./run.web build $2 ; exit $? ;fi
 
 
 if [ "$1" = "doctor" ]; then ./node_modules/.bin/expo doctor ; exit $? ;fi

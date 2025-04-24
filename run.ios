@@ -1,0 +1,16 @@
+#!/bin/sh
+
+LOCAL_EXPO=./node_modules/.bin/expo
+
+ios_start() {
+  $LOCAL_EXPO run:ios
+}
+
+
+ios_build() {
+  eas build --platform ios --profile preview --local --non-interactive
+}
+
+
+if [ "$1" = "start" ]; then android_start ; exit $? ;fi
+if [ "$1" = "build" ]; then android_build $2 ; exit $? ;fi

@@ -1,0 +1,16 @@
+#!/bin/sh
+
+LOCAL_EXPO=./node_modules/.bin/expo
+
+web_start() {
+  $LOCAL_EXPO start --web
+}
+
+
+web_build() {
+  $LOCAL_EXPO export --platform web
+}
+
+
+if [ "$1" = "start" ]; then web_start ; exit $? ;fi
+if [ "$1" = "build" ]; then web_build $2 ; exit $? ;fi
