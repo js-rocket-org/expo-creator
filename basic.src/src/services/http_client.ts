@@ -2,7 +2,7 @@
 // This module is just responsible for making a HTTP request and returning the result.
 // All possible errors are captured here so that try/catch blocks are not necessary when used
 
-import { JSON_stringify } from '../utils/converters';
+import { JSON_stringify } from '@/utils/converters';
 
 const DEFAULT_TIMEOUT = 8000;
 
@@ -27,10 +27,10 @@ enum HttpCode {
 
 type ErrorCodeName = Record<number, string>;
 
-const errorCodeNames: ErrorCodeName = {
-  [HttpCode.NO_INTERNET]: 'No internet connection.',
-  [HttpCode.BAD_RESPONSE]: 'Something went wrong. Try again',
-  [HttpCode.NOT_FOUND]: 'Not found.',
+export const errorCodeMessage: ErrorCodeName = {
+  [HttpCode.NO_INTERNET]: 'No internet connection',
+  [HttpCode.BAD_RESPONSE]: 'Bad response from server',
+  [HttpCode.NOT_FOUND]: 'Not found',
   [HttpCode.UNKNOWN]: 'Unknown error',
 };
 
@@ -48,7 +48,6 @@ class APIRequest {
     fullUrl: string,
     body?: string,
     extraHeaders?: MapHeader,
-    authToken?: string,
     timeout?: number,
   ) {
     this.type = type;
@@ -73,7 +72,7 @@ class APIResponse {
   }
 }
 
-const BAD_RESPONSE = new APIResponse(false, HttpCode.BAD_RESPONSE, errorCodeNames[HttpCode.BAD_RESPONSE]);
+const BAD_RESPONSE = new APIResponse(false, HttpCode.BAD_RESPONSE, errorCodeMessage[HttpCode.BAD_RESPONSE]);
 
 class HTTPClient {
   getRequestHeaders(request: APIRequest) {
@@ -121,7 +120,9 @@ class HTTPClient {
     let responseBody = '';
     try {
       responseBody = await response.text();
-    } catch (_) {}
+    } catch (_) {
+      // ignore error, since can not do anything about it
+    }
 
     if (!(statusCode >= HttpCode.SUCCESS && statusCode <= HttpCode.SUCCESS1)) {
       return new APIResponse(false, statusCode, responseBody, responseHeaders);

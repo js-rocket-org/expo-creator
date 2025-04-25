@@ -1,13 +1,10 @@
 import React from 'react';
-import { useNavigation } from '@react-navigation/native';
 
 import { Button } from '@/components/button';
 import * as Svgimages from '@/components/a_svg';
 import { FullScreenLayout } from '@/components/layouts/full_screen_layout';
 import { ButtonWrapper, IntroText, LogoImage, LogoWrapper, NormalTextWrapper, TitleText } from './styles';
 import { getRouter, routePush } from '@/services/router';
-
-// type IntroNavigationProp = StackNavigationProp<RootStackParamList, Routes.Intro>;
 
 export const IntroPage = () => {
   const router = getRouter();
@@ -17,8 +14,12 @@ export const IntroPage = () => {
   };
 
   return (
-    <FullScreenLayout backgroundImageSrc={require('../../assets/png/clouds.png')} resizeMode='stretch' alignItems='center'
-    style={{borderWidth:1, borderColor: 'gold'}}>
+    <FullScreenLayout
+      backgroundImageSrc={require('../../assets/png/clouds.png')}
+      resizeMode='cover'
+      alignItems='center'
+      // style={{ borderWidth: 1, borderColor: 'gold' }}
+    >
       <TitleText>App Introduction</TitleText>
       <NormalTextWrapper>
         <LogoWrapper>

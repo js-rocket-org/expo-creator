@@ -2,26 +2,28 @@
 
 import React from 'react';
 import { Text, TouchableOpacity, TouchableOpacityProps } from 'react-native';
-import appTheme from '../theme';
+
+import appTheme from '@/theme';
 
 // ### Type / interface
 type StyledButtonProps = TouchableOpacityProps & { color?: string; backgroundColor?: string };
 
 // ### Styles
-const StyledButton = (props) => {
+const StyledButton = (props: any) => {
   const { children, style, backgroundColor, ...allProps } = props;
   const theme = appTheme;
   const defaultStyle = {
     minWidth: '100%',
     paddingTop: theme.spacing.small,
     paddingBottom: theme.spacing.small,
-    paddingLeft: 0,
-    paddingRight: 0,
+    paddingLeft: theme.spacing.small,
+    paddingRight: theme.spacing.small,
     backgroundColor: backgroundColor ? backgroundColor : theme.colors.accent,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: theme.borderRadius.small,
   };
+
   return (
     <TouchableOpacity style={{ ...defaultStyle, ...style }} {...allProps}>
       {children}
@@ -29,7 +31,7 @@ const StyledButton = (props) => {
   );
 };
 
-const ButtonText = (props) => {
+const ButtonText = (props: any) => {
   const { children, style, color, ...allProps } = props;
   const theme = appTheme;
   const defaultStyle = {

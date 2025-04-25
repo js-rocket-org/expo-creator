@@ -17,10 +17,14 @@ INSTALL_CMD_DEV="pnpm add -D"
 # react-native-screens react-native-safe-area-context required by @react-navigation/native
 # react-native-gesture-handler required by @react-navigation/stack
 
+# $INSTALL_CMD react-native-svg \
+#    react-native-screens react-native-safe-area-context @react-navigation/native \
+#    react-native-gesture-handler  @react-navigation/stack \
+#    @react-native-async-storage/async-storage
+
 $INSTALL_CMD react-native-svg \
-   react-native-screens react-native-safe-area-context @react-navigation/native \
-   react-native-gesture-handler  @react-navigation/stack \
    @react-native-async-storage/async-storage
+
 
 $INSTALL_CMD_DEV @svgr/cli
 

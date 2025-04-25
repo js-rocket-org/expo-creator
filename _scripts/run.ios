@@ -1,4 +1,5 @@
 #!/bin/sh
+# Scripts related to IOS platform management go here
 
 LOCAL_EXPO=./node_modules/.bin/expo
 
@@ -12,5 +13,5 @@ ios_build() {
 }
 
 
-if [ "$1" = "start" ]; then android_start ; exit $? ;fi
-if [ "$1" = "build" ]; then android_build $2 ; exit $? ;fi
+if [ "$1" = "start" ]; then ios_start ; exit $? ;fi
+if [ "$1" = "build" ]; then ios_build $2 ; exit $? ;fi

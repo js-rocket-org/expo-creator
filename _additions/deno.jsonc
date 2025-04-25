@@ -1,0 +1,18 @@
+{
+  // https://docs.deno.com/runtime/fundamentals/configuration/
+  "fmt": {
+    "singleQuote": true,
+    "lineWidth": 120
+  },
+  "lint": {
+    "exclude": [
+      "node_modules/"
+    ],
+    "rules": {
+      "exclude": [
+       //  "no-empty-enum"
+        "no-explicit-any"
+      ]
+    }
+  }
+}

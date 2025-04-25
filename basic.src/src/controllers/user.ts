@@ -1,12 +1,9 @@
 // authentication related functions
-import { NavigationProp } from '@react-navigation/native';
-
 import { StorageKeys } from '../constants';
 import { writeString } from '../utils/storage';
-import { ApiErrorHandler, apiPost } from '../utils/http_client';
+import { apiPost } from '../utils/api_client';
 import { JSON_parse } from '../utils/converters';
 import { TUserModel } from '../models/user';
-import { Routes } from '../routes/routes';
 import { AppRouter, routeReplace } from '@/services/router';
 
 export type LoginResponse = {
@@ -27,28 +24,27 @@ export class UserCtrl {
     this._userModel = u;
   }
 
-  // Returns true on signin success otherwise false, if false errorHandler is called to provide user feedback
-  signIn = async (email: string, pass: string, errorHandler: ApiErrorHandler | null): Promise<boolean> => {
+  // Returns empty string on signin success otherwise string provides reason
+  signIn = async (email: string, pass: string): Promise<string> => {
     // Fake successful login
     const tokenPair2 = 'sjdasdakdadadad\tdfsdfsfsfsfdsf';
     this._userModel?.setUserDetails({ firstname: 'John', email: 'john@example.com', token: tokenPair2 });
     await setUserDetails(tokenPair2, 'John');
     // This will always be true.
-    if (tokenPair2.length > 0) return true;
+    if (tokenPair2.length > 0) return '';
 
     const requestBody = { authLogin: { email, pass } };
 
-    const response = await apiPost('/jsonql', requestBody, errorHandler, false);
+    const response = await apiPost('/jsonql', requestBody, false);
 
-    if (response === null) return false;
+    if (response === null) return 'Login failed(1)';
 
     const loginData = JSON_parse(response.result ?? '') as {
       authLogin: LoginResponse | string;
     };
     if (!loginData || typeof loginData.authLogin === 'string') {
       const errorMessage = typeof loginData.authLogin === 'string' ? loginData.authLogin : 'Unknown error';
-      if (typeof errorHandler === 'function') errorHandler(errorMessage);
-      return false;
+      return errorMessage;
     }
 
     const loginDetails = loginData.authLogin;
@@ -63,7 +59,7 @@ export class UserCtrl {
 
     await setUserDetails(tokenPair, loginDetails.firstname);
 
-    return true;
+    return '';
   };
 
   signOut = async (router: AppRouter) => {
@@ -71,6 +67,6 @@ export class UserCtrl {
 
     this._userModel?.setUserDetails({ firstname: '', email: '', token: '' });
 
-    routeReplace(router, '/login')
+    routeReplace(router, '/login');
   };
 }

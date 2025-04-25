@@ -1,13 +1,11 @@
 import React, { FC } from 'react';
 import { Text, View, ViewProps } from 'react-native';
-// import { useNavigation, useRoute } from '@react-navigation/native';
 
 import { FullScreenLayout } from './full_screen_layout';
-import { CommonHeader } from '../common_header';
-import { Button } from '../button';
-import { Routes } from '../../routes/routes';
-import appTheme from '../../theme';
-import {  getRouter, routeCanGoBack, routeGetCurrentName, routeGoBack, routePush } from '@/services/router';
+import { CommonHeader } from '@/components/common_header';
+import { Button } from '@/components/button';
+import appTheme from '@/theme';
+import { getRouter, routeCanGoBack, routeGetCurrentName, routeGoBack, routePush } from '@/services/router';
 
 // ### type/interface
 type ExtraHeaderFooterLayoutProps = {
@@ -21,7 +19,7 @@ type ExtraHeaderFooterLayoutProps = {
 type HeaderFooterLayoutProps = ViewProps & ExtraHeaderFooterLayoutProps;
 
 // ### Styles
-const ButtonText = (props) => {
+const ButtonText = (props: any) => {
   const { children, style, ...allProps } = props;
   const theme = appTheme;
   const defaultStyle = {
@@ -35,7 +33,7 @@ const ButtonText = (props) => {
   );
 };
 
-const StyledBody = (props) => {
+const StyledBody = (props: any) => {
   const { children, style, ...allProps } = props;
   const theme = appTheme;
   const defaultStyle = {
@@ -70,14 +68,17 @@ export const HeaderFooterLayout: FC<HeaderFooterLayoutProps> = ({
   };
 
   const onPressMenu = () => {
-    routePush(router, '/settings')
+    routePush(router, '/settings');
   };
 
   const currentRouteName = routeGetCurrentName();
 
   const showGoBack = router && routeCanGoBack(router) && showBack;
   // only show menu button if not in settings screen
-  const showMenuButton = showMenu && currentRouteName !== Routes.Settings;
+  const showMenuButton = showMenu && currentRouteName !== '/settings';
+
+  const BACKBUTTON_UICON = '\u304F';
+  const MENUBUTTON_UICON = '\u2630';
 
   return (
     <FullScreenLayout onPageEnter={onPageEnter} onPageExit={onPageExit}>
@@ -85,18 +86,18 @@ export const HeaderFooterLayout: FC<HeaderFooterLayoutProps> = ({
         itemLeft={showGoBack
           ? (
             <Button backgroundColor={theme.colors.primary} onPress={onPressBack}>
-              <ButtonText>{'\u{304F}'}</ButtonText>
+              <ButtonText>{BACKBUTTON_UICON}</ButtonText>
             </Button>
           )
-          : <></>}
+          : null}
         itemCenter={<ButtonText>{' ' || `Route: ${currentRouteName}`}</ButtonText>}
         itemRight={showMenuButton
           ? (
             <Button backgroundColor={theme.colors.primary} onPress={onPressMenu}>
-              <ButtonText>{'\u{2630}'}</ButtonText>
+              <ButtonText>{MENUBUTTON_UICON}</ButtonText>
             </Button>
           )
-          : <></>}
+          : null}
       />
       <StyledBody justifyContent={justifyContent} alignItems={alignItems} style={style}>
         {children}

@@ -9,15 +9,7 @@ import { Input } from '../../components/input';
 import * as Icons from '../../components/a_icons';
 import { BusyIndicator } from '../../components/busy_indicator';
 import { isValidEmail } from '../../utils/validators';
-import {
-  ButtonText,
-  ButtonTextWrapper,
-  ErrorText,
-  LoginFormWrapper,
-  StyledHeaderFooterLayout,
-  SubmitButtonWrapper,
-  UnicodeIcon,
-} from './styles';
+import { ButtonText, ButtonTextWrapper, ErrorText, LoginFormWrapper, SubmitButtonWrapper, UnicodeIcon } from './styles';
 import { displayDate } from '../../utils/formatters';
 import { useUserModel } from '../../models/user';
 import { delay } from '../../utils/helpers';
@@ -36,7 +28,6 @@ const initialFormErrors = {
   email: '',
   pass: '',
 };
-
 
 export const LoginPage = () => {
   const theme = appTheme;
@@ -96,10 +87,13 @@ export const LoginPage = () => {
 
     setBusy(true);
 
-    const loginSuccess = await userActions.signIn(form.email, form.pass, loginErrorHandler);
-    if (!loginSuccess) return;
+    const loginErrorMessage = await userActions.signIn(form.email, form.pass);
+    if (loginErrorMessage) {
+      loginErrorHandler(loginErrorMessage);
+      return;
+    }
 
-    await delay(3000); // for debugging
+    await delay(2000); // for debugging
     setBusy(false);
 
     // clear inputs after successful login
@@ -108,11 +102,13 @@ export const LoginPage = () => {
     return routeReplace(router, '/settings');
   };
 
+  const BACKDOOR_UICON = '\u2386';
+
   return (
     <HeaderFooterLayout onPageEnter={onPageEnter}>
       <LoginFormWrapper>
         {isBusy && <BusyIndicator />}
-        <UnicodeIcon>{'\u{2386}'}</UnicodeIcon>
+        <UnicodeIcon>{BACKDOOR_UICON}</UnicodeIcon>
 
         <Text>{displayDate(new Date())}</Text>
 
@@ -128,7 +124,7 @@ export const LoginPage = () => {
           value={form.pass}
           onChangeText={onChangeField.pass}
           errorMessage={formErrors.pass}
-          secureTextEntry={true}
+          secureTextEntry
         />
 
         <ErrorText>{loginError}</ErrorText>

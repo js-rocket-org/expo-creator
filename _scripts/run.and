@@ -1,4 +1,5 @@
 #!/bin/sh
+# Scripts related to Android platform management go here
 
 LOCAL_EXPO=./node_modules/.bin/expo
 

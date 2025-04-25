@@ -1,0 +1,123 @@
+#!/bin/sh
+# Script related to creation of expo project go here
+
+# NOTE for AWK search and replace
+# To escape a character you will need 3 forward slashs in a double quoted string
+# These characters nee escaping  *  (  .
+
+
+git_commit() {
+  COMMENT="$1"
+  git add -A .
+  git commit -m "$1" --no-verify
+}
+
+
+remove_package_expo_web_browser() {
+  FILEPATH="src/components/ExternalLink.tsx"
+  #
+  SEARCH1="import \\\* as WebBrowser from 'expo-web-browser';"
+  REPLACE1="// import * as WebBrowser from 'expo-web-browser';"
+
+  SEARCH2="WebBrowser\\\.openBrowserAsync\\\(props.href as string);"
+  REPLACE2="// WebBrowser.openBrowserAsync(props.href as string);"
+
+  awk -v SEARCH="$SEARCH1" -v REPLACE="$REPLACE1" "{gsub(SEARCH, REPLACE); print}" $FILEPATH > ${FILEPATH}_tmp && \
+    awk -v SEARCH="$SEARCH2" -v REPLACE="$REPLACE2" "{gsub(SEARCH, REPLACE); print}" ${FILEPATH}_tmp > $FILEPATH && \
+    rm -f ${FILEPATH}_tmp
+
+  git_commit "remove reference to expo-web-browser"
+}
+
+
+remove_package_reanimated() {
+  FILEPATH="src/app/_layout.tsx"
+  #
+  SEARCH="import 'react-native-reanimated';"
+  REPLACE="// import 'react-native-reanimated';"
+  awk -v SEARCH="$SEARCH" -v REPLACE="$REPLACE" "{gsub(SEARCH, REPLACE); print}" $FILEPATH > ${FILEPATH}_tmp && \
+    mv -f ${FILEPATH}_tmp $FILEPATH
+
+  git_commit "remove reference to react-native-reanimated"
+}
+
+
+remove_unused_packages() {
+  remove_package_expo_web_browser
+  
+  # Remove react-native-reanimated reduces node_modules folder from 2Gb to 1.1gb
+  remove_package_reanimated
+
+  # Keep react-native-screens as it is needed by IOS
+  pnpm remove expo-linking expo-system-ui \
+    react-native-reanimated \
+    expo-web-browser
+
+  git_commit "remove unused packages"
+}
+
+
+move_to_src_folder() {
+  mkdir ./src
+  mv ./app ./src/
+  mv ./assets ./src/
+  mv ./components ./src/
+  mv ./constants ./src/
+  git_commit "Move source code into src folder"
+}
+
+
+copy_scripts_and_additions() {
+  cp ../run  ./
+  cp -r ../_scripts ./
+  cp -r ../_additions/.github ../_additions/*  ./
+  git_commit "copy scripts and additions into new project"
+}
+
+
+use_basic_src_template() {
+  cp -r ../basic.src/* ./
+  ./package_install.sh
+  git_commit "Copy over basic src code and install packages"
+
+  awk '{gsub("./src/assets/images", "./src/assets/png"); print}' app.json > app.tmp && \
+    mv -f app.tmp app.json
+  git_commit "update app.json ./src/assets/images to ./src/assets/png"
+}
+
+
+app_create() {
+  # NPM template to use: default, blank, blank-typescript, tabs, bare-minimum
+  # specify template version with @ symbol .  e.g --template tabs@52
+  pnpm create expo-app --no-install --template tabs $APP_NAME
+  cd $APP_NAME
+  git init
+  git_commit "Initial commit after create expo-app"
+
+  mv ./components/__tests__/StyledText-test.js ./components/__tests__/StyledText-test.jsx
+  git_commit "Fix filename to pass linting"
+
+  move_to_src_folder
+
+  awk '{gsub(/\.\/\*/, "./src/*"); print}' tsconfig.json > tsconfig.tmp && mv -f tsconfig.tmp tsconfig.json
+  git_commit "update tsconfig.json alias for @"
+
+  awk '{gsub("./assets", "./src/assets"); print}' app.json > app.tmp && mv -f app.tmp app.json
+  git_commit "update app.json ./assets to ./src/assets"
+
+  copy_scripts_and_additions
+
+  remove_unused_packages
+
+  rm -rf src/
+  git_commit "Remove template source code in src folder"
+
+  use_basic_src_template
+
+  ./run link-githook
+}
+
+
+if [ "$1" = "create" ]; then app_create ; exit $? ;fi
+
+if [ "$1" = "test" ]; then remove_package_expo_web_browser ; exit $? ;fi

@@ -2,7 +2,7 @@ import React from 'react';
 import { ActivityIndicator, Modal, View } from 'react-native';
 import appTheme from '../theme';
 
-const BusyContainer = (props) => {
+const BusyContainer = (props: any) => {
   const { children, style, ...allProps } = props;
   const theme = appTheme;
   const defaultStyle = {
@@ -23,7 +23,7 @@ const BusyContainer = (props) => {
 
 export const BusyIndicator = () => {
   return (
-    <Modal transparent={true}>
+    <Modal transparent>
       <BusyContainer>
         <ActivityIndicator size='large' />
       </BusyContainer>

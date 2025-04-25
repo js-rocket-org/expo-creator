@@ -3,12 +3,12 @@ import { View } from 'react-native';
 import appTheme from '../theme';
 
 interface CommonHeaderProps {
-  itemLeft?: React.ReactElement;
-  itemCenter?: React.ReactElement;
-  itemRight?: React.ReactElement;
+  itemLeft?: React.ReactElement | null;
+  itemCenter?: React.ReactElement | null;
+  itemRight?: React.ReactElement | null;
 }
 
-export const HeaderWrapper = (props) => {
+export const HeaderWrapper = (props: any) => {
   const { children, style, ...allProps } = props;
   const theme = appTheme;
   const defaultStyle = {
@@ -26,7 +26,7 @@ export const HeaderWrapper = (props) => {
   );
 };
 
-export const HeaderLeft = (props) => {
+export const HeaderLeft = (props: any) => {
   const { children, style, ...allProps } = props;
   const defaultStyle = {
     flex: 1,
@@ -39,7 +39,7 @@ export const HeaderLeft = (props) => {
   );
 };
 
-export const HeaderCenter = (props) => {
+export const HeaderCenter = (props: any) => {
   const { children, style, ...allProps } = props;
   const defaultStyle = {
     flex: 4,
@@ -52,7 +52,7 @@ export const HeaderCenter = (props) => {
   );
 };
 
-export const HeaderRight = (props) => {
+export const HeaderRight = (props: any) => {
   const { children, style, ...allProps } = props;
   const defaultStyle = {
     flex: 1,

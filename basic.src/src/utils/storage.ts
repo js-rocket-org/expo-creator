@@ -6,7 +6,7 @@ const readString = async (key: StorageKeys, defaultValue: string): Promise<strin
   return result === null ? defaultValue : result;
 };
 
-const writeString = async (key: StorageKeys, value: string): Promise<void> => {
+const writeString = async (key: StorageKeys, value: string): Promise<boolean> => {
   return await setData(StorageKeys[key], value);
 };
 
@@ -15,7 +15,7 @@ const readInteger = async (key: StorageKeys, defaultValue: number): Promise<numb
   return result === null ? defaultValue : parseInt(result, 10);
 };
 
-const writeInteger = async (key: StorageKeys, value: number): Promise<void> => {
+const writeInteger = async (key: StorageKeys, value: number): Promise<boolean> => {
   // eslint-disable-next-line no-bitwise
   return await setData(StorageKeys[key], (value | 0).toString());
 };
@@ -25,7 +25,7 @@ const readJson = async (key: StorageKeys, defaultValue: object): Promise<object>
   return result === null ? defaultValue : JSON.parse(result);
 };
 
-const writeJson = async (key: StorageKeys, value: object): Promise<void> => {
+const writeJson = async (key: StorageKeys, value: object): Promise<boolean> => {
   const stringValue = JSON.stringify(value);
   return await setData(StorageKeys[key], stringValue);
 };

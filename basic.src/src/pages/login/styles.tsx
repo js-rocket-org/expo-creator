@@ -2,8 +2,7 @@
 import { Text, View } from 'react-native';
 import appTheme from '../../theme';
 
-
-export const LoginFormWrapper = (props) => {
+export const LoginFormWrapper = (props: any) => {
   const { children, style, ...allProps } = props;
   const theme = appTheme;
   const defaultStyle = {
@@ -20,7 +19,7 @@ export const LoginFormWrapper = (props) => {
   );
 };
 
-export const UnicodeIcon = (props) => {
+export const UnicodeIcon = (props: any) => {
   const { children, style, ...allProps } = props;
   const defaultStyle = {
     fontSize: 60,
@@ -33,7 +32,7 @@ export const UnicodeIcon = (props) => {
   );
 };
 
-export const ButtonTextWrapper = (props) => {
+export const ButtonTextWrapper = (props: any) => {
   const { children, style, ...allProps } = props;
   const theme = appTheme;
   const defaultStyle = {
@@ -48,7 +47,7 @@ export const ButtonTextWrapper = (props) => {
   );
 };
 
-export const ButtonText = (props) => {
+export const ButtonText = (props: any) => {
   const { children, style, ...allProps } = props;
   const theme = appTheme;
   const defaultStyle = {
@@ -62,7 +61,7 @@ export const ButtonText = (props) => {
   );
 };
 
-export const ErrorText = (props) => {
+export const ErrorText = (props: any) => {
   const { children, style, ...allProps } = props;
   const theme = appTheme;
   const defaultStyle = {
@@ -76,7 +75,7 @@ export const ErrorText = (props) => {
   );
 };
 
-export const SubmitButtonWrapper = (props) => {
+export const SubmitButtonWrapper = (props: any) => {
   const { children, style, ...allProps } = props;
   const defaultStyle = {
     width: '50%',

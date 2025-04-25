@@ -24,7 +24,7 @@ const Picker_Item = ({ label }: PickerItemProps) => {
 };
 
 // ### Styles
-const PickerLabel = (props) => {
+const PickerLabel = (props: any) => {
   const { children, style, ...allProps } = props;
   const theme = appTheme;
   const defaultStyle = {
@@ -38,7 +38,7 @@ const PickerLabel = (props) => {
   );
 };
 
-const PickerModalOverlay = (props) => {
+const PickerModalOverlay = (props: any) => {
   const { children, style, ...allProps } = props;
   const theme = appTheme;
   const defaultStyle = {
@@ -54,7 +54,7 @@ const PickerModalOverlay = (props) => {
   );
 };
 
-const PickerModalContentContainer = (props) => {
+const PickerModalContentContainer = (props: any) => {
   const { children, style, ...allProps } = props;
   const theme = appTheme;
   const defaultStyle = {
@@ -70,7 +70,7 @@ const PickerModalContentContainer = (props) => {
   );
 };
 
-const PickerItemOption = (props) => {
+const PickerItemOption = (props: any) => {
   const { children, style, ...allProps } = props;
   const theme = appTheme;
   const defaultStyle = {
@@ -87,7 +87,7 @@ const PickerItemOption = (props) => {
   );
 };
 
-const PickerItemOptionLabel = (props) => {
+const PickerItemOptionLabel = (props: any) => {
   const { children, style, ...allProps } = props;
   const theme = appTheme;
   const defaultStyle = {
@@ -101,7 +101,7 @@ const PickerItemOptionLabel = (props) => {
   );
 };
 
-const PickerItemOptionSeparator = (props) => {
+const PickerItemOptionSeparator = (props: any) => {
   const { children, style, ...allProps } = props;
   const theme = appTheme;
   const defaultStyle = {
@@ -157,7 +157,7 @@ const Picker: React.FC<PickerProps> & PickerIF = ({ children, selectedValue, onV
         <PickerLabel>{selectedLabel} &#9660;</PickerLabel>
       </TouchableOpacity>
 
-      <Modal visible={opened} transparent={true} onRequestClose={() => setOpened(false)}>
+      <Modal visible={opened} transparent onRequestClose={() => setOpened(false)}>
         <PickerModalOverlay onPress={() => setOpened(false)}>
           <PickerModalContentContainer>
             <FlatList

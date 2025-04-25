@@ -7,24 +7,27 @@ import { Buffer } from 'buffer';
 export const atob = (input: string) => Buffer.from(input, 'base64').toString('ascii');
 export const btoa = (input: string) => Buffer.from(input, 'base64');
 
-
 // Predictable JSON converters.  Will not throw errors you either get a result or empty string
 export const JSON_parse = (input: string): string | object => {
   let result = '';
   try {
     result = JSON.parse(input);
-  } catch (_) {}
+  } catch (_) {
+    // empty catch to prevent throwing error from this function
+  }
   return result;
 };
 
 export const JSON_stringify = (
-  input: any,
-  replacer?: ((this: any, key: string, value: any) => any) | undefined,
+  input: unknown,
+  replacer?: ((this: unknown, key: string, value: unknown) => unknown) | undefined,
   space?: string | number | undefined,
 ) => {
   let result = '';
   try {
     result = JSON.stringify(input, replacer, space);
-  } catch (_) {}
+  } catch (_) {
+    // empty catch to prevent throwing error from this function
+  }
   return result;
 };

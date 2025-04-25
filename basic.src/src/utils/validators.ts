@@ -9,17 +9,17 @@ const emailTester =
 export const isValidEmail = (email: string): boolean => {
   if (!email) return false;
 
-  var emailParts = email.split('@');
+  const emailParts = email.split('@');
 
   if (emailParts.length !== 2) return false;
 
-  var account = emailParts[0];
-  var address = emailParts[1];
+  const account = emailParts[0];
+  const address = emailParts[1];
 
   if (account.length > 64) return false;
   else if (address.length > 255) return false;
 
-  var domainParts = address.split('.');
+  const domainParts = address.split('.');
 
   if (
     domainParts.some(function (part) {

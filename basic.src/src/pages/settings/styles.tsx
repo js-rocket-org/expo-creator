@@ -1,7 +1,8 @@
 import { Text, View } from 'react-native';
-import appTheme from '../../theme';
 
-export const ContentWrapper = (props) => {
+import appTheme from '@/theme';
+
+export const ContentWrapper = (props: any) => {
   const { children, style, ...allProps } = props;
   const theme = appTheme;
   const defaultStyle = {
@@ -18,7 +19,7 @@ export const ContentWrapper = (props) => {
   );
 };
 
-export const SectionLabel = (props) => {
+export const SectionLabel = (props: any) => {
   const { children, style, ...allProps } = props;
   const theme = appTheme;
   const defaultStyle = {
@@ -33,7 +34,7 @@ export const SectionLabel = (props) => {
   );
 };
 
-export const Label = (props) => {
+export const Label = (props: any) => {
   const { children, style, ...allProps } = props;
   const theme = appTheme;
   const defaultStyle = {
@@ -47,7 +48,7 @@ export const Label = (props) => {
   );
 };
 
-export const Row = (props) => {
+export const Row = (props: any) => {
   const { children, style, ...allProps } = props;
   const theme = appTheme;
   const defaultStyle = {
@@ -69,7 +70,7 @@ export const Row = (props) => {
   );
 };
 
-export const ColumnLeft = (props) => {
+export const ColumnLeft = (props: any) => {
   const { children, style, ...allProps } = props;
   const defaultStyle = {
     flex: 1,
@@ -83,7 +84,7 @@ export const ColumnLeft = (props) => {
   );
 };
 
-export const ColumnRight = (props) => {
+export const ColumnRight = (props: any) => {
   const { children, style, ...allProps } = props;
   const defaultStyle = {
     flex: 1,
@@ -97,7 +98,7 @@ export const ColumnRight = (props) => {
   );
 };
 
-export const ButtonWrapper = (props) => {
+export const ButtonWrapper = (props: any) => {
   const { children, style, ...allProps } = props;
   const theme = appTheme;
 
@@ -115,7 +116,7 @@ export const ButtonWrapper = (props) => {
   );
 };
 
-export const Spacer = (props) => {
+export const Spacer = (props: any) => {
   const { children, style, ...allProps } = props;
   const theme = appTheme;
 

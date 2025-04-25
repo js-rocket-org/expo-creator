@@ -1,9 +1,9 @@
 import React, { FC } from 'react';
-import { ImageBackground, ImageBackgroundProps, ImageSourcePropType, View, ViewProps } from 'react-native';
+import { ImageBackground, ImageSourcePropType, Platform, View, ViewProps } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 
-import appTheme from '../../theme';
+import appTheme from '@/theme';
 
 // types/interface
 type ExtraFullScreenLayoutProps = {
@@ -16,7 +16,7 @@ type ExtraFullScreenLayoutProps = {
 };
 type FullScreenLayoutProps = ExtraFullScreenLayoutProps & ViewProps;
 
-const PageWrapper = (props) => {
+const PageWrapper = (props: any) => {
   const { children, style, ...allProps } = props;
   const theme = appTheme;
   const defaultStyle = {
@@ -32,23 +32,38 @@ const PageWrapper = (props) => {
   );
 };
 
-const ImagePageWrapper = (props) => {
-  const { children, style, resizeMode, source, ...allProps } = props;
+const ImagePageWrapper = (props: any) => {
+  const { children, style, source, resizeMode, ...allProps } = props;
+
   const defaultStyle = {
     flex: 1,
     margin: 0,
     padding: 0,
   };
 
-  console.log(`resizeMode: ${resizeMode}`);
+  if (Platform.OS !== 'web') {
+    return (
+      <ImageBackground source={source} resizeMode={resizeMode} style={{ ...defaultStyle, ...style }} {...allProps}>
+        {children}
+      </ImageBackground>
+    );
+  }
+
+  // Use View component for web platform
+  const webStyle = {
+    backgroundImage: `url(${source.uri})`,
+    backgroundSize: resizeMode,
+    backgroundRepeat: 'no-repeat',
+  };
+
   return (
-    <ImageBackground source={source} resizeMode={resizeMode} style={{ ...defaultStyle, ...style }} {...allProps}>
+    <View style={[defaultStyle, webStyle, style]} {...allProps}>
       {children}
-    </ImageBackground>
+    </View>
   );
 };
 
-const ContentContainer = (props) => {
+const ContentContainer = (props: any) => {
   const { children, style, ...allProps } = props;
   const defaultStyle = { flex: 1 };
   return (

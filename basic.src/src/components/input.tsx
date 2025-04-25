@@ -8,7 +8,7 @@ import appTheme from '../theme';
 type StyledTextInputProps = TextInputProps & { errorMessage?: string };
 
 // ### Styles
-const StyleTextInput = (props) => {
+const StyleTextInput = (props: any) => {
   const { children, style, errorMessage, ...allProps } = props;
   const theme = appTheme;
   const defaultStyle = {
@@ -27,7 +27,7 @@ const StyleTextInput = (props) => {
   );
 };
 
-const ErrorText = (props) => {
+const ErrorText = (props: any) => {
   const { children, style, ...allProps } = props;
   const theme = appTheme;
   const defaultStyle = {

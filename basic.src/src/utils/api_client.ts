@@ -2,8 +2,8 @@
 // This module is responsible for injecting authentication tokens into all API requests, renewing tokens and
 // retrying requests if necessary
 
-import { API_BASE_URL, StorageKeys } from '../constants';
-import { APIResponse, HTTPClient, HttpCode, MapHeader, RequestType } from '../services/http_client';
+import { API_BASE_URL, StorageKeys } from '@/constants';
+import { APIResponse, errorCodeMessage, HTTPClient, HttpCode, MapHeader, RequestType } from '@/services/http_client';
 import { readString, writeString } from './storage';
 import { JSON_parse } from './converters';
 
@@ -21,8 +21,6 @@ interface IAuthRefresh {
     refreshToken: string;
   };
 }
-
-type ApiErrorHandler = (message: string) => void;
 
 const httpClient = new HTTPClient();
 
@@ -72,9 +70,8 @@ const jsonFetch = async (
   requestType: RequestType,
   url: string,
   data: object | null,
-  onError: ApiErrorHandler | null,
   isAuthenticated: boolean = true,
-): Promise<APIResponse | null> => {
+): Promise<APIResponse> => {
   const headers: MapHeader = Object.assign({}, DEFAULT_HEADERS);
 
   let authTokenPair = '';
@@ -112,25 +109,22 @@ const jsonFetch = async (
     apiResponse = newResponse;
   }
 
-  if (typeof onError === 'function') onError(apiResponse.result ?? '');
-  return null;
+  return new APIResponse(false, HttpCode.UNKNOWN, errorCodeMessage[HttpCode.UNKNOWN]);
 };
 
 export const apiPost = async (
   url: string,
   data: object | null,
-  onError: ApiErrorHandler | null,
   isAuthenticated: boolean = true,
 ): Promise<APIResponse | null> => {
-  return jsonFetch(RequestType.POST, url, data, onError, isAuthenticated);
+  return await jsonFetch(RequestType.POST, url, data, isAuthenticated);
 };
 
 export const apiGet = async (
   url: string,
-  onError: ApiErrorHandler | null,
   isAuthenticated: boolean = true,
 ): Promise<APIResponse | null> => {
-  return jsonFetch(RequestType.GET, url, null, onError, isAuthenticated);
+  return await jsonFetch(RequestType.GET, url, null, isAuthenticated);
 };
 
 /*

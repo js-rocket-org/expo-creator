@@ -2,16 +2,13 @@
 
 import React from 'react';
 import { Switch } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 
-import { Button } from '../../components/button';
-// import {StorageKeys} from '../../constants';
-// import {readString} from '../../utils/storage';
-import { HeaderFooterLayout } from '../../components/layouts/header_footer_layout';
+import { Button } from '@/components/button';
+import { HeaderFooterLayout } from '@/components/layouts/header_footer_layout';
 import { ButtonWrapper, ColumnLeft, ColumnRight, ContentWrapper, Label, Row, SectionLabel, Spacer } from './styles';
-import { useAppConfigModel } from '../../models/app_config';
-import { useUserModel } from '../../models/user';
-import { Picker } from '../../components/picker';
+import { useAppConfigModel } from '@/models/app_config';
+import { useUserModel } from '@/models/user';
+import { Picker } from '@/components/picker';
 import { getRouter } from '@/services/router';
 
 const prt = console.log;
@@ -29,7 +26,6 @@ const SettingOption = ({ label, children }: { label: string; children: JSX.Eleme
 
 // ### SettingsPage Component
 export const SettingsPage = () => {
-  const navigation = useNavigation();
   const userModel = useUserModel();
   const userActions = userModel.actions();
   const { userDetails, isAuthenticated } = userModel;
@@ -74,11 +70,11 @@ export const SettingsPage = () => {
         <Spacer />
 
         <SectionLabel>User Details</SectionLabel>
-        <SettingOption label={'User name'}>
+        <SettingOption label='User name'>
           <Label>{`${isAuthenticated() ? userDetails.firstname : 'Not authenticated'}`}</Label>
         </SettingOption>
 
-        <SettingOption label={'email'}>
+        <SettingOption label='email'>
           <Label>{`${isAuthenticated() ? userDetails.email : ' '}`}</Label>
         </SettingOption>
 
@@ -86,7 +82,7 @@ export const SettingsPage = () => {
 
         {isAuthenticated() && (
           <ButtonWrapper>
-            <Button onPress={onPressLogout}>{'Logout'}</Button>
+            <Button onPress={onPressLogout}>Logout</Button>
           </ButtonWrapper>
         )}
       </ContentWrapper>

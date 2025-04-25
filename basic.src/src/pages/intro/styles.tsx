@@ -3,7 +3,7 @@ import appTheme from '../../theme';
 
 // import styled from 'styled-components/native';
 
-export const TitleText = (props) => {
+export const TitleText = (props: any) => {
   const { children, style, ...allProps } = props;
   const theme = appTheme;
   const defaultStyle = {
@@ -18,7 +18,7 @@ export const TitleText = (props) => {
   );
 };
 
-export const NormalTextWrapper = (props) => {
+export const NormalTextWrapper = (props: any) => {
   const { children, style, ...allProps } = props;
   const theme = appTheme;
   const defaultStyle = {
@@ -34,7 +34,7 @@ export const NormalTextWrapper = (props) => {
   );
 };
 
-export const LogoWrapper = (props) => {
+export const LogoWrapper = (props: any) => {
   const { children, style, ...allProps } = props;
   const defaultStyle = {
     flex: 1,
@@ -50,7 +50,7 @@ export const LogoWrapper = (props) => {
   );
 };
 
-export const LogoImage = (props) => {
+export const LogoImage = (props: any) => {
   const { style, ...allProps } = props;
   const defaultStyle = {
     width: 80,
@@ -59,10 +59,11 @@ export const LogoImage = (props) => {
   return <Image style={{ ...defaultStyle, ...style }} {...allProps} />;
 };
 
-export const ButtonWrapper = (props) => {
+export const ButtonWrapper = (props: any) => {
   const { children, style, ...allProps } = props;
   const theme = appTheme;
   const defaultStyle = {
+    width: '100%',
     padding: theme.spacing.medium,
   };
   return (
@@ -72,7 +73,7 @@ export const ButtonWrapper = (props) => {
   );
 };
 
-export const IntroText = (props) => {
+export const IntroText = (props: any) => {
   const { children, style, ...allProps } = props;
   const theme = appTheme;
   const defaultStyle = {

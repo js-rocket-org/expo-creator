@@ -5,15 +5,16 @@ export const getData = async (key: string): Promise<string | null> => {
     const value = await AsyncStorage.getItem(key);
 
     return value;
-  } catch (e) {
+  } catch (_) {
     return null;
   }
 };
 
-export const setData = async (key: string, value: string) => {
+export const setData = async (key: string, value: string): Promise<boolean> => {
   try {
     await AsyncStorage.setItem(key, value);
-  } catch (e) {
-    // saving error
+  } catch (_) {
+    return false;
   }
+  return true;
 };
