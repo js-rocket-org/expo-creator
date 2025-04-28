@@ -1,0 +1,20 @@
+    main:
+      - step:
+          name: Tag Release Version
+          script:
+            - *global-envs
+            - *prod-envs
+            - ./run ci-tag-version
+            
+      - step:
+          name: Make build by synch with GitHub
+          timeout: 2m
+          clone:
+            depth: full
+          script:
+            - *global-envs
+            - *prod-envs
+            - cd $BITBUCKET_CLONE_DIR
+            - git status
+            - git remote add github $BUILD_REPO
+            - git push --force --set-upstream github $BITBUCKET_BRANCH:$BITBUCKET_BRANCH

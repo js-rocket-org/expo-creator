@@ -1,0 +1,32 @@
+# DO NOT update the bitbucket-pipelines.yml file directly
+# run _ci/update.sh to update from the files in the _ci folder
+
+definitions:
+  services:
+    docker:
+      # this reduces the memory usage of associated docker job container to save costs
+      # {{UUID}_system_auth-proxy
+      memory: 512
+  # non-secret global variables
+  global-vars:
+    - &global-envs >-
+      export APP_NAME="expoapp"
+      && export PATH="$PATH:$PWD/_bin"
+      && export JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64"
+      && export JDK_HOME="/usr/lib/jvm/java-17-openjdk-amd64"
+      && export BUILD_REPO="git@github.com:YourOrg/your-repo.git"
+    - &dev-envs >-
+      export VAR2=""
+    - &stg-envs >-
+      export VAR2=""
+    - &pre-envs >-
+      export VAR2=""
+    - &prod-envs >-
+      export VAR2=""
+
+
+# Using the smallest possible image with git installed to transfer code over to build system
+# image: docker.io/alpine/git:latest
+image: docker.io/atlassian/default-image:4
+pipelines:
+  branches:

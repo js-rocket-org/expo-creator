@@ -63,6 +63,32 @@ generate_svg_icons() {
 }
 
 
+# Install everything necesarry to prepare for CI testing or build
+ci_install() {
+  npm -g install pnpm
+  pnpm install
+
+  # TODO ensure deno is installed
+}
+
+
+# increment version number
+ci_bump() {
+  echo "TODO"
+}
+
+# send a message to slack about build progress
+ci_slack() {
+  echo "TODO"
+}
+
+
+# Build all or just Android or IOS from CI/CD pipeline
+ci_build() {
+  echo "TODO"
+}
+
+
 if [ "$1" = "create" ]; then . ./_scripts/run.create create ; exit $? ; fi
 
 if [ "$1" = "format" ]; then app_format $2 ; exit $? ; fi
@@ -74,18 +100,28 @@ if [ "$1" = "link-githook" ]; then app_hook_link; exit; fi
 # Generators
 if [ "$1" = "gen-svg" ]; then generate_svg_icons ; exit $? ; fi
 
+# CI/CD commands
+if [ "$1" = "ci-install" ]; then ci_install ; exit $? ; fi
+if [ "$1" = "ci-bump" ]; then ci_bump ; exit $? ; fi # TODO
+if [ "$1" = "ci-slack" ]; then ci_slack $2 $3 ; exit $? ; fi # TODO
+if [ "$1" = "ci-build" ]; then ci_build $2 $3 ; exit $? ; fi # TODO
+
 
 # Android commands
 if [ "$1" = "start.a" ]; then . ./_scripts/run.and start ; exit $? ; fi
 if [ "$1" = "build.a" ]; then . ./_scripts/run.and build $2 ; exit $? ; fi
+if [ "$1" = "upload.a" ]; then . ./_scripts/run.and upload $2 ; exit $? ; fi # TODO
 
 # ios commands
 if [ "$1" = "start.i" ]; then . ./_scripts/run.ios start ; exit $? ; fi
 if [ "$1" = "build.i" ]; then . ./_scripts/run.ios build $2 ; exit $? ; fi
+if [ "$1" = "upload.i" ]; then . ./_scripts/run.ios upload $2 ; exit $? ; fi # TODO
 
 # web commands
 if [ "$1" = "start.w" ]; then . ./_scripts/run.web start ; exit $? ; fi
 if [ "$1" = "build.w" ]; then . ./_scripts/run.web build $2 ; exit $? ; fi
+if [ "$1" = "upload.w" ]; then . ./_scripts/run.web upload $2 ; exit $? ; fi # TODO
+
 
 
 if [ "$1" = "doctor" ]; then ./node_modules/.bin/expo doctor ; exit $? ; fi
