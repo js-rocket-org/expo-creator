@@ -9,9 +9,17 @@ android_start() {
 
 
 android_build() {
-  eas build --platform android --profile preview --local --non-interactive
+  FLAVOR=$1
+  eas build --platform android --profile development --local --non-interactive
+}
+
+
+android_builde() {
+  FLAVOR=$1
+  eas build --platform android --profile development --non-interactive --no-wait
 }
 
 
 if [ "$1" = "start" ]; then android_start ; exit $? ;fi
 if [ "$1" = "build" ]; then android_build $2 ; exit $? ;fi
+if [ "$1" = "builde" ]; then android_builde $2 ; exit $? ;fi

@@ -1,35 +1,28 @@
-    dev:
+    develop:
       - step:
           name: Check code before version bump
+          runs-on:
+            - self.hosted
           timeout: 2m
           script:
             - *global-envs
             - *dev-envs
             # Check codebase
             - ./run ci-install
-            - ./run set-flavor dev
             - ./run format
             - ./run lint
             - ./run test
             # Increment version number if required when merged to dev branch
             - ./run bump
-            
       - step:
-          name: Tag Dev Version
-          script:
-            - *global-envs
-            - *dev-envs
-            - ./run ci-tag-version --dev
-
-      - step:
-          name: Make build by synch with GitHub
+          name: Make builds
+          runs-on:
+            - self.hosted
           timeout: 2m
           clone:
             depth: full
           script:
             - *global-envs
             - *dev-envs
-            - cd $BITBUCKET_CLONE_DIR
-            - git status
-            - git remote add github $BUILD_REPO
-            - git push --force --set-upstream github $BITBUCKET_BRANCH:$BITBUCKET_BRANCH
+            - ./run ci-slack "Starting dev build of $APP_NAME"
+            - ./run ci-build dev

@@ -1,4 +1,4 @@
-Typical folder structure for Flutter / React Native, Cordova or Ionic projects.  Replace lib with src for non-flutter projects
+Typical folder structure for Flutter / React Native, Cordova or Ionic projects.  Replace src with lib for flutter projects
 
 ```
 _docs/ - documentation / postman / insomnia
@@ -26,10 +26,10 @@ src/i18n/  - for internationalization and localization
 src/components/ - use widgets for flutter / components for react-native
 src/controllers/ - anything related to state management go here.
                    Example: flutter providers/locators, react native (redux, context, hooks)
-                   Controllers should change the state of a model
+                   Controllers should change the state represented by a model
 
 src/graphql/ - if used
-src/models/ - abstract representations of objects, e.g database models/ JSON models
+src/models/ - abstract representations of objects, e.g database models, JSON models, user state, app state
 
 src/pages/
 src/pages/screen1/ - each page should be in its own folder
@@ -41,26 +41,26 @@ src/services/storage - local storage
 src/services/camera - camera access
 src/services/geolocation - geolocation
 
-src/utils/  - library of functions that use the services, converters, formatters,
+src/utils/  - library of functions used through out the app such as service helpers, converters, formatters, etc
 
-src/routes/ - defines all possible routes in the app
+src/routes/ - defines all possible routes in the app (not used if using file-based expo-router)
 
-src/types.d.ts - type definitions
+src/types/ - typescipt type definitions goe here
 
 src/constants.dart / .tsx - contains urls, time intervals, etc
                             This could also be a folder if there are many constants
 
 src/main.dart / index.tsx - main entry point
 
-test/ - unit test for general functions. component test should be within a components folder (for flutter only)
-       for other type of projects tests should be located close to where the component is
+test/ - unit test for general functions. component test should be within a components folder
 
 Files in root folder
 env.example - example environment file for secret variables used in the CI/CD process
 
 env.settings - public settings for the helper scripts
 
-README.md - how to quickly download, initialise and run project.  More detailed documents should go into _docs folder
+README.md - instructions on how to quickly download, initialise and run project.
+            More detailed documents should go into _docs folder
 
 run - shell script to simplify typical project operations, example ./run start, ./run build
 ```

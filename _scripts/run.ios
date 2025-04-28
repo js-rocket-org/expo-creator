@@ -9,9 +9,17 @@ ios_start() {
 
 
 ios_build() {
-  eas build --platform ios --profile preview --local --non-interactive
+  FLAVOR=$1
+  eas build --platform ios --profile development --local --non-interactive
+}
+
+
+ios_builde() {
+  FLAVOR=$1
+  eas build --platform ios --profile development --non-interactive --no-wait
 }
 
 
 if [ "$1" = "start" ]; then ios_start ; exit $? ;fi
 if [ "$1" = "build" ]; then ios_build $2 ; exit $? ;fi
+if [ "$1" = "builde" ]; then ios_builde $2 ; exit $? ;fi

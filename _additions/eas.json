@@ -1,0 +1,34 @@
+{
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "resourceClass": "default"
+      },
+      "android": {
+        "resourceClass": "default",
+        "buildType": "apk"
+      }
+    },
+    "staging": {
+      "distribution": "internal",
+      "ios": {
+        "resourceClass": "default"
+      },
+      "android": {
+        "resourceClass": "default",
+        "buildType": "app-bundle"
+      }
+    },
+    "production": {
+      "ios": {
+        "resourceClass": "default"
+      },
+      "android": {
+        "resourceClass": "default",
+        "buildType": "app-bundle"
+      }
+    }
+  }
+}

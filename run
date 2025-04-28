@@ -1,41 +1,103 @@
 #!/bin/sh
 
 # This script simply provides shortcuts to common commands for mobile development
-# Each platform script should be in separated into it's own file and called form here
+# Each platform script should be in separated into it's own file and called from here
 
-APP_NAME=expoapp
+
+VERSION_BUMP_BRANCH=dev
+
+
+# read environment from a file
+if [ -f ./env.settings ]; then . ./env.settings; fi
+if [ -f ./.env ]; then . ./.env; fi
+# variables read from environments file needs to be exported to be used in some programs
+# such as nodejs using process.env
+export GOOGLE_UPLOAD_FOLDER="$GOOGLE_UPLOAD_FOLDER"
+
 
 # TODO remove this line in created project folder
 if [ -d $APP_NAME ]; then cd $APP_NAME ;  fi
 
-check_if_deno_installed() {
-  which -s deno
+export IS_IOS=$(if [ "${OSTYPE#darwin}" != "$OSTYPE" ]; then echo "1" ; else echo "0" ; fi)
+export CPU_ARCH=$(uname -m)
+export DENO_EXE=deno
+export DENO_VERSION="2.2.12"
+export BIN_FOLDER="_bin"
+
+
+deno_download_and_install() {
+  echo "deno is not installed. Downloading from here:  https://github.com/denoland/deno/releases"
+  if [ $IS_IOS = 1 ]; then  # MacOS
+    if [ "$CPU_ARCH" = "arm64" ]; then
+      DENO_LINK="https://github.com/denoland/deno/releases/download/v${DENO_VERSION}/deno-aarch64-apple-darwin.zip"
+    else
+      DENO_LINK="https://github.com/denoland/deno/releases/download/v${DENO_VERSION}/deno-x86_64-apple-darwin.zip"
+    fi
+  else  # Linux
+    if [ "$CPU_ARCH" = "aarch64" ]; then
+      DENO_LINK="https://github.com/denoland/deno/releases/download/v${DENO_VERSION}/deno-aarch64-unknown-linux-gnu.zip"
+    else
+      DENO_LINK="https://github.com/denoland/deno/releases/download/v${DENO_VERSION}/deno-x86_64-unknown-linux-gnu.zip"
+    fi
+  fi
+
+  if [ ! -d "$BIN_FOLDER" ]; then mkdir "$BIN_FOLDER" ; fi
+  curl -L -o "$BIN_FOLDER/deno.zip" "$DENO_LINK" && unzip -d "$BIN_FOLDER/" "$BIN_FOLDER/deno.zip"
+}
+
+
+ensure_deno_installed() {
+  which deno > /dev/null
   if [ ! $? = 0 ]; then
-    echo "deno is not installed. Download from here:  https://github.com/denoland/deno/releases"
-    echo "quick links:"
-    echo "curl -L -O https://github.com/denoland/deno/releases/download/v2.2.11/deno-x86_64-unknown-linux-gnu.zip"
-    echo "curl -L -O https://github.com/denoland/deno/releases/download/v2.2.11/deno-x86_64-apple-darwin.zip"
+    if [ -f "$BIN_FOLDER/deno" ]; then
+      export DENO_EXE="$BIN_FOLDER/deno"
+      return 0
+    fi
+
+    deno_download_and_install
+
+    if [ -f "$BIN_FOLDER/deno" ]; then
+      export DENO_EXE="$BIN_FOLDER/deno"
+      return 0
+    else
+      exit 1
+    fi
+  fi
+}
+
+
+check_if_deno_installed() {
+  which deno > /dev/null
+  if [ ! $? = 0 ]; then
+    if [ -f "$BIN_FOLDER/deno" ]; then
+      export DENO_EXE="$BIN_FOLDER/deno"
+      return 0
+    fi
+
+    echo "deno is not installed or set in path.  Please setup deno and try again"
     exit 1
   fi
 }
 
-check_if_deno_installed
-
 
 app_format() {
+  check_if_deno_installed
+
   if [ "$1" = "fix" ]; then
-    deno fmt src/
+    $DENO_EXE fmt src/
   else
-    deno fmt --check src/
+    $DENO_EXE fmt --check src/
   fi
 }
 
 
 app_lint() {
+  check_if_deno_installed
+
   if [ "$1" = "fix" ]; then
-    deno lint --fix src/
+    $DENO_EXE lint --fix src/
   else
-    deno lint src/
+    $DENO_EXE lint src/
   fi
 }
 
@@ -63,29 +125,117 @@ generate_svg_icons() {
 }
 
 
-# Install everything necesarry to prepare for CI testing or build
+# Install everything necesary to prepare for CI testing or build
 ci_install() {
-  npm -g install pnpm
-  pnpm install
+  ensure_deno_installed
 
-  # TODO ensure deno is installed
+  npm -g install pnpm
+  pnpm install -g eas-cli
+  pnpm install
+}
+
+
+ci_set_autocommit_user() {
+  git config user.name "Bitbucket Pipelines Bot"
+  git config user.email "no-reply@petbarn.com.au"
+}
+
+
+ci_update_eas_json() {
+  git add eas.json
+  git commit --no-verify -m "Bump version to $NEW_VERSION"
+  git push
+}
+
+bb_get_develop_branch() {
+  # source: https://community.atlassian.com/t5/Bitbucket-questions/Can-t-checkout-master-on-a-branch-pipeline/qaq-p/1004778
+  git fetch --unshallow
+  git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
+  git fetch origin
+  git checkout --track origin/develop
+  git pull
+}
+
+
+expo_increment_version() {
+  bb_get_develop_branch
+
+  echo "TODO"
+  # read eas.json file and increment versionCode and buildNumber
+
+  ci_set_autocommit_user
+  ci_update_eas_json
 }
 
 
 # increment version number
 ci_bump() {
-  echo "TODO"
+  CURRENT_BRANCH=$(git branch --show-current)
+  if [ ! "$CURRENT_BRANCH" = "$VERSION_BUMP_BRANCH" ]; then echo "CANCELLED: You must be in the $VERSION_BUMP_BRANCH branch"; exit 0; fi
+  # expo_increment_version
 }
 
-# send a message to slack about build progress
+
+# send a message to slack
 ci_slack() {
-  echo "TODO"
+  MESSAGE="$1"
+  CURL_DATA='{"channel":"'$SLACK_CHANNEL'","blocks":[{"type":"section","text":{"type":"mrkdwn","text":"'$MESSAGE'"}}]}'
+  echo "$CURL_DATA\n"
+  curl -H "Content-type: application/json" -H "Authorization: Bearer $SLACK_TOKEN" \
+    --data "$CURL_DATA" -X POST https://slack.com/api/chat.postMessage
 }
 
 
-# Build all or just Android or IOS from CI/CD pipeline
+ci_tag_version() {
+  echo "Extracting version from pubspec.yaml"
+  VERSION=$(awk -F ': ' '/^version:/ {print $2}' pubspec.yaml)
+  
+  if [ "$1" = "--dev" ]; then
+    TAG_NAME="dev-v$VERSION"
+  else
+    TAG_NAME="v$VERSION"
+  fi
+  
+  echo "Checking if tag $TAG_NAME already exists..."
+  if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
+    echo "ERROR: Tag $TAG_NAME already exists. Pipeline will fail."
+    exit 1  # Fails the pipeline if the tag already exists
+  fi
+
+  echo "âœ… Creating new tag $TAG_NAME"
+  git config user.email "no-reply@petbarn.com.au"
+  git config user.name "Bitbucket Pipelines Bot"
+  git tag -a "$TAG_NAME" -m "Release $TAG_NAME"
+  git push origin "$TAG_NAME"
+}
+
+
+# Sync this bitbucket repo to github to trigger Github action builds
+ci_sync_bb2gh_repo() {
+  cd $BITBUCKET_CLONE_DIR
+  git status
+  git remote add github $BUILD_REPO
+  git push --force --set-upstream github $BITBUCKET_BRANCH:$BITBUCKET_BRANCH
+}
+
+
+# Build all or just one flavor from CI/CD pipeline
+# This script may either build from current runner or trigger a build on a remote system
 ci_build() {
-  echo "TODO"
+  FLAVOR=$1
+  PLATFORM=$2
+
+  if [ "$PLATFORM" = "a" ]; then
+    echo ". ./_scripts/run.and build $FLAVOR"
+  elif [ "$PLATFORM" = "i" ]; then
+    echo ". ./_scripts/run.ios build $FLAVOR"
+  elif [ "$PLATFORM" = "w" ]; then
+    echo ". ./_scripts/run.web build $FLAVOR"
+  else # build all platforms
+    . ./_scripts/run.and builde $FLAVOR
+    # . ./_scripts/run.ios builde $FLAVOR
+    . ./_scripts/run.web build $FLAVOR
+  fi
 }
 
 
@@ -103,18 +253,22 @@ if [ "$1" = "gen-svg" ]; then generate_svg_icons ; exit $? ; fi
 # CI/CD commands
 if [ "$1" = "ci-install" ]; then ci_install ; exit $? ; fi
 if [ "$1" = "ci-bump" ]; then ci_bump ; exit $? ; fi # TODO
-if [ "$1" = "ci-slack" ]; then ci_slack $2 $3 ; exit $? ; fi # TODO
-if [ "$1" = "ci-build" ]; then ci_build $2 $3 ; exit $? ; fi # TODO
+if [ "$1" = "ci-slack" ]; then ci_slack "$2" ; exit $? ; fi
+if [ "$1" = "ci-tag-version" ]; then ci_tag_version "$2"; exit $?; fi
+if [ "$1" = "ci-sync-bb2gh" ]; then ci_sync_bb2gh_repo $2 $3 ; exit $? ; fi
+if [ "$1" = "ci-build" ]; then ci_build $2 $3 ; exit $? ; fi
 
 
 # Android commands
 if [ "$1" = "start.a" ]; then . ./_scripts/run.and start ; exit $? ; fi
 if [ "$1" = "build.a" ]; then . ./_scripts/run.and build $2 ; exit $? ; fi
+if [ "$1" = "builde.a" ]; then . ./_scripts/run.and builde $2 ; exit $? ; fi
 if [ "$1" = "upload.a" ]; then . ./_scripts/run.and upload $2 ; exit $? ; fi # TODO
 
 # ios commands
 if [ "$1" = "start.i" ]; then . ./_scripts/run.ios start ; exit $? ; fi
 if [ "$1" = "build.i" ]; then . ./_scripts/run.ios build $2 ; exit $? ; fi
+if [ "$1" = "builde.i" ]; then . ./_scripts/run.ios builde $2 ; exit $? ; fi
 if [ "$1" = "upload.i" ]; then . ./_scripts/run.ios upload $2 ; exit $? ; fi # TODO
 
 # web commands
@@ -123,7 +277,7 @@ if [ "$1" = "build.w" ]; then . ./_scripts/run.web build $2 ; exit $? ; fi
 if [ "$1" = "upload.w" ]; then . ./_scripts/run.web upload $2 ; exit $? ; fi # TODO
 
 
-
-if [ "$1" = "doctor" ]; then ./node_modules/.bin/expo doctor ; exit $? ; fi
+# Misc commands
+if [ "$1" = "doctor" ]; then pnpm dlx expo-doctor ; exit $? ; fi
 
 echo "Unknown command"

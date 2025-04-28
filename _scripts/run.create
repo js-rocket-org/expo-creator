@@ -70,7 +70,7 @@ move_to_src_folder() {
 copy_scripts_and_additions() {
   cp ../run  ./
   cp -r ../_scripts ./
-  cp -r ../_additions/.github ../_additions/*  ./
+  cp -r ../_additions/.github ../_additions/.gitignore ../_additions/.easignore ../_additions/*  ./
   git_commit "copy scripts and additions into new project"
 }
 

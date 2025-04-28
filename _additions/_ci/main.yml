@@ -1,20 +1,13 @@
     main:
       - step:
-          name: Tag Release Version
-          script:
-            - *global-envs
-            - *prod-envs
-            - ./run ci-tag-version
-            
-      - step:
-          name: Make build by synch with GitHub
+          name: Make builds
+          runs-on:
+            - self.hosted
           timeout: 2m
           clone:
             depth: full
           script:
             - *global-envs
             - *prod-envs
-            - cd $BITBUCKET_CLONE_DIR
-            - git status
-            - git remote add github $BUILD_REPO
-            - git push --force --set-upstream github $BITBUCKET_BRANCH:$BITBUCKET_BRANCH
+            - ./run ci-slack "Starting production build of $APP_NAME"
+            - ./run ci-build prod

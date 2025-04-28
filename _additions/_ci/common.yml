@@ -15,6 +15,9 @@ definitions:
       && export JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64"
       && export JDK_HOME="/usr/lib/jvm/java-17-openjdk-amd64"
       && export BUILD_REPO="git@github.com:YourOrg/your-repo.git"
+      && export EXPO_TOKEN="$EXPO_TOKEN"
+      && export SLACK_CHANNEL="$SLACK_CHANNEL"
+      && export SLACK_TOKEN="$SLACK_TOKEN"
     - &dev-envs >-
       export VAR2=""
     - &stg-envs >-
